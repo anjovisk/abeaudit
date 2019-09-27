@@ -9,7 +9,7 @@ public class Transaction {
 	private Long userId;
 	private LocalDateTime date;
 	private BigDecimal value;
-	private String creditCardNuber;
+	private String creditCardNumber;
 	
 	public Long getIsbn() {
 		return isbn;
@@ -35,16 +35,16 @@ public class Transaction {
 	public void setValue(BigDecimal value) {
 		this.value = value;
 	}
-	public String getCreditCardNuber() {
-		return creditCardNuber;
-	}
-	public void setCreditCardNuber(String creditCardNuber) {
-		this.creditCardNuber = creditCardNuber;
-	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getCreditCardNumber() {
+		return creditCardNumber;
+	}
+	public void setCreditCardNumber(String creditCardNumber) {
+		this.creditCardNumber = creditCardNumber;
 	}
 }
