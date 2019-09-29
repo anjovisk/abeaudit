@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.imarques.abeaudit.model.CreditCard;
 import com.imarques.abeaudit.model.Transaction;
+import com.imarques.abeaudit.model.TransactionTraceability;
 import com.imarques.abeaudit.service.AuditService;
 import com.imarques.abeaudit.util.DataContainer;
 
@@ -38,9 +40,9 @@ public class AuditController {
 			@ApiResponse(code = 406, message = "Não foi possível registrar a transacão.")
 	})
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Transaction> postBook(
-			@ApiParam(required = true, value = "Informações da transação") @RequestBody Transaction transaction) {
-		Transaction result = auditService.create(transaction);
+	public ResponseEntity<TransactionTraceability> postTransaction(
+			@ApiParam(required = true, value = "Informações da transação") @RequestBody TransactionTraceability transaction) {
+		TransactionTraceability result = auditService.create(transaction);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(result);
@@ -52,10 +54,10 @@ public class AuditController {
 			@ApiResponse(code = 404, message = "Transação não encontrada.")
 	})
 	@RequestMapping(path="/{id}",  method=RequestMethod.GET)
-	public ResponseEntity<Transaction> getTransaction(
+	public ResponseEntity<TransactionTraceability> getTransaction(
 			@ApiParam(required = true, value = "Código da transação") @PathVariable("id") Long id) {
-		Optional<Transaction> transaction = auditService.getTransaction(id);
-		ResponseEntity<Transaction> result = ResponseEntity
+		Optional<TransactionTraceability> transaction = auditService.getTraceability(id);
+		ResponseEntity<TransactionTraceability> result = ResponseEntity
 				.status(transaction.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
 				.body(transaction.orElse(null));
 		return result;
@@ -66,23 +68,23 @@ public class AuditController {
 			@ApiResponse(code = 200, message = "Solicitação procecessada com sucesso.")
 	})
 	@RequestMapping(method=RequestMethod.GET)
-	public ResponseEntity<DataContainer<Transaction>> getTransactions(
+	public ResponseEntity<DataContainer<TransactionTraceability>> getTransactions(
 			@ApiParam(required = false, value = "Código ISBN") @RequestParam(name="isbn", required=false) Long isbn, 
 			@ApiParam(required = false, value = "Id da transação") @RequestParam(name="id", required=false) Long id,
-			@ApiParam(required = false, value = "Id do usuário que efetuou a transação") @RequestParam(name="userId", required=false) Long userId,
+			@ApiParam(required = false, value = "Nickname do usuário que efetuou a transação") @RequestParam(name="userId", required=false) String username,
 			@ApiParam(required = false, value = "Data em que a transação foi efetuada") @RequestParam(name="date", required=false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
 			@ApiParam(required = false, value = "Número do cartão") @RequestParam(name="creditCardNumber", required=false) String creditCardNumber,
 			@ApiParam(required = false, value = "Valor da transação") @RequestParam(name="value", required=false) BigDecimal value,
 			@ApiParam(required = false, value = "Quantidade máxima de transações na requisição", defaultValue = "10") @RequestParam(name="limit", required=false, defaultValue = "10") int limit,
 			@ApiParam(required = false, value = "Quantidade de transações ignoradas na pesquisa", defaultValue = "0") @RequestParam(name="offset", required=false, defaultValue = "0") int offset) {
-		Transaction parameters = new Transaction();
+		TransactionTraceability parameters = new TransactionTraceability();
+		parameters.setTransaction(new Transaction());
+		parameters.getTransaction().setCreditCard(new CreditCard());
 		parameters.setId(id);
-		parameters.setIsbn(isbn);
-		parameters.setCreditCardNumber(creditCardNumber);
-		parameters.setUserId(userId);
+		parameters.getTransaction().getCreditCard().setNumber(creditCardNumber);
 		parameters.setDate(date != null ? LocalDateTime.from(date) : null);
-		parameters.setValue(value);
-		DataContainer<Transaction> transactions = auditService.find(parameters, limit, offset);
+		parameters.getTransaction().setValue(value);
+		DataContainer<TransactionTraceability> transactions = auditService.find(parameters, limit, offset);
 		return ResponseEntity.status(HttpStatus.OK).body(transactions);
 	}
 }

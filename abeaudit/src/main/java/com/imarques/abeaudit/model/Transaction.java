@@ -1,33 +1,16 @@
 package com.imarques.abeaudit.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class Transaction {
-	private Long id;
-	private Long isbn;
-	private Long userId;
-	private LocalDateTime date;
+	private CreditCard creditCard;
 	private BigDecimal value;
-	private String creditCardNumber;
-	
-	public Long getIsbn() {
-		return isbn;
+	private int installments;
+	public CreditCard getCreditCard() {
+		return creditCard;
 	}
-	public void setIsbn(Long isbn) {
-		this.isbn = isbn;
-	}
-	public Long getUserId() {
-		return userId;
-	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	public LocalDateTime getDate() {
-		return date;
-	}
-	public void setDate(LocalDateTime date) {
-		this.date = date;
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
 	}
 	public BigDecimal getValue() {
 		return value;
@@ -35,16 +18,10 @@ public class Transaction {
 	public void setValue(BigDecimal value) {
 		this.value = value;
 	}
-	public Long getId() {
-		return id;
+	public int getInstallments() {
+		return installments;
 	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getCreditCardNumber() {
-		return creditCardNumber;
-	}
-	public void setCreditCardNumber(String creditCardNumber) {
-		this.creditCardNumber = creditCardNumber;
+	public void setInstallments(int installments) {
+		this.installments = installments;
 	}
 }
