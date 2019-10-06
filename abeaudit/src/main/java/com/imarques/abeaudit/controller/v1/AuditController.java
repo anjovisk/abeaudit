@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imarques.abeaudit.model.CreditCard;
+import com.imarques.abeaudit.model.PaymentAuthorization;
 import com.imarques.abeaudit.model.Transaction;
 import com.imarques.abeaudit.model.TransactionTraceability;
 import com.imarques.abeaudit.service.AuditService;
@@ -41,8 +42,8 @@ public class AuditController {
 	})
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<TransactionTraceability> postTransaction(
-			@ApiParam(required = true, value = "Informações da transação") @RequestBody TransactionTraceability transaction) {
-		TransactionTraceability result = auditService.create(transaction);
+			@ApiParam(required = true, value = "Informações da transação") @RequestBody PaymentAuthorization paymentAuthorization) {
+		TransactionTraceability result = auditService.create(paymentAuthorization);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(result);
@@ -78,12 +79,13 @@ public class AuditController {
 			@ApiParam(required = false, value = "Quantidade máxima de transações na requisição", defaultValue = "10") @RequestParam(name="limit", required=false, defaultValue = "10") int limit,
 			@ApiParam(required = false, value = "Quantidade de transações ignoradas na pesquisa", defaultValue = "0") @RequestParam(name="offset", required=false, defaultValue = "0") int offset) {
 		TransactionTraceability parameters = new TransactionTraceability();
-		parameters.setTransaction(new Transaction());
-		parameters.getTransaction().setCreditCard(new CreditCard());
+		parameters.setPaymentAuthorization(new PaymentAuthorization());
+		parameters.getPaymentAuthorization().setTransaction(new Transaction());
+		parameters.getPaymentAuthorization().getTransaction().setCreditCard(new CreditCard());
 		parameters.setId(id);
-		parameters.getTransaction().getCreditCard().setNumber(creditCardNumber);
-		parameters.setDate(date != null ? LocalDateTime.from(date) : null);
-		parameters.getTransaction().setValue(value);
+		parameters.getPaymentAuthorization().getTransaction().getCreditCard().setNumber(creditCardNumber);
+		parameters.getPaymentAuthorization().setDate(date != null ? LocalDateTime.from(date) : null);
+		parameters.getPaymentAuthorization().getTransaction().setValue(value);
 		DataContainer<TransactionTraceability> transactions = auditService.find(parameters, limit, offset);
 		return ResponseEntity.status(HttpStatus.OK).body(transactions);
 	}

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.imarques.abeaudit.model.PaymentAuthorization;
 import com.imarques.abeaudit.model.TransactionTraceability;
 import com.imarques.abeaudit.util.DataContainer;
 
@@ -18,9 +19,9 @@ public class AuditService {
 	public DataContainer<TransactionTraceability> find(TransactionTraceability parameters, int limit, int offset) {
 		List<TransactionTraceability> traceabilitiesTemp = traceabilities.stream().filter(traceability -> 
 				(parameters.getId() == null || parameters.getId().equals(traceability.getId())) 
-				&& (parameters.getTransaction() == null ||  parameters.getTransaction().getCreditCard() == null || parameters.getTransaction().getCreditCard().getNumber() == null || traceability.getTransaction().getCreditCard().getNumber().contains(parameters.getTransaction().getCreditCard().getNumber())) 
-				&& (parameters.getDate() == null || parameters.getDate().toLocalDate().isEqual(traceability.getDate().toLocalDate())) 
-				&& (parameters.getTransaction() == null || parameters.getTransaction().getValue() == null || parameters.getTransaction().getValue().equals(traceability.getTransaction().getValue()))
+				&& (parameters.getPaymentAuthorization() == null || parameters.getPaymentAuthorization().getTransaction() == null ||  parameters.getPaymentAuthorization().getTransaction().getCreditCard() == null || parameters.getPaymentAuthorization().getTransaction().getCreditCard().getNumber() == null || traceability.getPaymentAuthorization().getTransaction().getCreditCard().getNumber().contains(parameters.getPaymentAuthorization().getTransaction().getCreditCard().getNumber())) 
+				&& (parameters.getPaymentAuthorization() == null || parameters.getPaymentAuthorization().getDate() == null || parameters.getPaymentAuthorization().getDate().toLocalDate().isEqual(traceability.getPaymentAuthorization().getDate().toLocalDate())) 
+				&& (parameters.getPaymentAuthorization() == null || parameters.getPaymentAuthorization().getTransaction() == null || parameters.getPaymentAuthorization().getTransaction().getValue() == null || parameters.getPaymentAuthorization().getTransaction().getValue().equals(traceability.getPaymentAuthorization().getTransaction().getValue()))
 			).skip(offset)
 				.limit(limit)
 				.collect(Collectors.toList());
@@ -28,10 +29,12 @@ public class AuditService {
 		return result;
 	}
 	
-	public TransactionTraceability create(TransactionTraceability traceability) {
-		traceability.setId(transactionId++);
-		traceabilities.add(traceability);
-		return traceability;
+	public TransactionTraceability create(PaymentAuthorization paymentAuthorization) {
+		TransactionTraceability result = new TransactionTraceability();
+		result.setPaymentAuthorization(paymentAuthorization);
+		result.setId(transactionId++);
+		traceabilities.add(result);
+		return result;
 	}
 	
 	public Optional<TransactionTraceability> getTraceability(Long id) {
